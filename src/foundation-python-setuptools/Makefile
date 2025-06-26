@@ -78,14 +78,24 @@ include Rules.mk
 build:
 # ROCKS8: Same setuptools version as in Rocky8
 # https://files.pythonhosted.org/packages/72/c2/c09362ab29338413ab687b47dab03bab4a792e2bbb727a1eb5e0a88e3b86/setuptools-39.0.1.zip
+ifeq ($(strip $(VERSION.MAJOR)),8)
 ifeq ($(shell ! test -f $(PYPKGNAME)-$(VERSION).zip && echo -n yes),yes)
 	@echo "ROCKS8: Sideloading $(PYPKGNAME)-$(VERSION).zip."
 	$(HTTPGET) -B https://files.pythonhosted.org -F packages/72/c2/c09362ab29338413ab687b47dab03bab4a792e2bbb727a1eb5e0a88e3b86 -n $(PYPKGNAME)-$(VERSION).zip
+endif
 	unzip $(PYPKGNAME)-$(VERSION).zip
+else
+ifeq ($(shell ! test -f $(PYPKGNAME)-$(VERSION).tar.gz && echo -n yes),yes)
+# ROCKS9: Same setuptools version as in Rocky9
+#https://files.pythonhosted.org/packages/12/68/95515eaff788370246dac534830ea9ccb0758e921ac9e9041996026ecaf2/setuptools-53.0.0.tar.gz
+ifeq ($(strip $(VERSION.MAJOR)),9)
+	$(HTTPGET) -B https://files.pythonhosted.org -F packages/12/68/95515eaff788370246dac534830ea9ccb0758e921ac9e9041996026ecaf2 -n $(PYPKGNAME)-$(VERSION).tar.gz
+endif
 else
 	gunzip -c $(PYPKGNAME)-$(VERSION).tar.gz | $(TAR) -xf -
 endif
-#	-cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
+endif
+	-cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
 	(								\
 		cd $(PYPKGNAME)-$(VERSION);				\
 		$(PY.PATH) setup.py build;				\
