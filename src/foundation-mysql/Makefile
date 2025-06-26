@@ -254,12 +254,13 @@ endif
 		LDFLAGS="$(MYSQL_LDFLAGS)" 				\
 			cmake -DCMAKE_INSTALL_PREFIX=$(PKGROOT)		\
 			-DMYSQL_DATADIR=$(PKGVAR)			\
-			-DMYSQL_UNIX_ADDR=$(PKGVAR)/mysql.sock 		\
+			-DMYSQL_UNIX_ADDR=$(PKGVAR)/foundation-mysql.sock 		\
 			-DMYSQL_TCP_PORT=40000				\
-			-DWITH_SSL=/opt/rocks				\
+			-DWITH_SSL=yes					\
 			-DWITH_DEBUG=no					\
-			-DCMAKE_C_FLAGS="-w"				\
-			-DCMAKE_CXX_FLAGS="-fpermissive -w";		\
+			-DWITH_BOOST=/opt/boost				\
+			-DDOWNLOAD_BOOST=1				\
+			-DFORCE_INSOURCE_BUILD=1;			\
 		$(MAKE);						\
 	)
 
