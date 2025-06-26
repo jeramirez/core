@@ -33,3 +33,12 @@ RPM.FILES = "/opt/rocks/bin/*\\n/opt/rocks/include/python2*\\n/opt/rocks/lib/lib
 RPM.FILES += "\\n/opt/rocks/lib/pkgconfig/*"
 #CONFIGOPTS += --exec-prefix=$(PKGROOT)
 endif 
+ifeq ($(strip $(VERSION.MAJOR)), 9)
+VERSION = 3.9.21
+RELEASE = 0
+ADDFLAGS = "CFLAGS=-fPIC"
+RPM.EXTRAS="%define _python_bytecompile_errors_terminate_build 0\\n%define __python_requires  %{_builddir}/%{name}-%{version}/filter_python_requires.sh"
+RPM.FILES = "/opt/rocks/bin/*\\n/opt/rocks/include/python3*\\n/opt/rocks/lib/lib*\\n/opt/rocks/lib/python3*\\n/opt/rocks/share/man/man1/*\\n/opt/rocks/usr/bin/*"
+RPM.FILES += "\\n/opt/rocks/lib/pkgconfig/*"
+#CONFIGOPTS += --exec-prefix=$(PKGROOT)
+endif 

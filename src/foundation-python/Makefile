@@ -180,16 +180,19 @@ include Rules.mk
 
 build:
 # https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+# https://www.python.org/ftp/python/3.9.21/Python-3.9.21.tgz
 ifeq ($(shell ! test -f Python-$(VERSION).tar.gz && echo -n yes),yes)
 	@echo "ROCKS8: Sideloading Python-$(VERSION).tar.gz."
-	$(HTTPGET) -B https://www.python.org -F ftp/python/2.7.18 -n Python-$(VERSION).tgz
+	$(HTTPGET) -B https://www.python.org -F ftp/python/$(VERSION) -n Python-$(VERSION).tgz
 	mv Python-$(VERSION).tgz Python-$(VERSION).tar.gz
 endif
 	gunzip -c Python-$(VERSION).tar.gz | $(TAR) -xf -
 	-cd patch-files-$(ARCH) && find . -type f | grep -v CVS | cpio -pduv ../
+ifeq ($(strip $(VERSION.MAJOR)),5)
+       patch -p0 < patch-$(VERSION)-$(ARCH)
+endif  
 	( 								\
 		cd Python-$(VERSION);					\
-		LIBS="/opt/rocks/lib/libssl.a /opt/rocks/lib/libcrypto.a"	\
 		./configure $(ADDFLAGS) --prefix=$(PKGROOT) 		\
 				$(CONFIGOPTS);				\
 		$(MAKE);						\
@@ -206,6 +209,12 @@ else
 	(								\
 		cd Python-$(VERSION);					\
 		$(MAKE) DESTDIR=$(ROOT) install;			\
+	)
+endif
+ifeq ($(strip $(VERSION.MAJOR)),9)
+	(								\
+		cd $(ROOT)/$(PKGROOT)/bin;				\
+		ln -s python3 python;					\
 	)
 endif
 	mkdir -p $(ROOT)/$(PKGROOT)/usr/bin;
